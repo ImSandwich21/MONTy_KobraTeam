@@ -1,0 +1,8 @@
+{
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\Daniel\\Desktop\\Licenciatura\\23-24 (3º ano)\\2º Semestre\\Compilação\\Helpers\\antlr-4.13.1-complete.jar"
+    ]
+}
