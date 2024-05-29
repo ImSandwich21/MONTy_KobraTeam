@@ -14,9 +14,7 @@
 
 grammar MONTyPython;
 
-options {
-    language = Python3;
-}
+@header { package antlr; }
 
 // Definição das regras do Parser
 // Define o programa como uma sequência de comandos até o fim do arquivo.
@@ -28,6 +26,7 @@ command
     : declaration
     | assignment
     | functionCall
+    | listFunction
     | forLoop
     | whileLoop
     | inputStatement
@@ -45,19 +44,18 @@ expression
     | expression op=LOGIC expression                        # Logical
     | ID LBRACK ID RBRACK                                   # ListIndex
     | ID                                                    # Variable
-    | UNARY? (INT|FLOAT)                                    # Number                                            
+    | UNARY? (FLOAT|INT)                                    # Number                                            
     ;
 
 // ----------------------- Variáveis -----------------------
 declaration
-    : INT_TYPE ID ('=' UNARY? INT)? (COMMA ID ('=' UNARY? INT)?)*                           # IntDeclaration
-    | FLOAT_TYPE? ID ('=' UNARY? (INT|FLOAT))? (COMMA ID ('=' UNARY? (INT|FLOAT))?)*        # FloatDeclaration
-    | INT_TYPE LBRACK RBRACK ID                                                             # IntListDeclaration
-    | FLOAT_TYPE LBRACK RBRACK ID                                                           # FloatListDeclaration
-    | 'def' FLOAT_TYPE? ID LPAREN (((FLOAT_TYPE|INT_TYPE) (LBRACK RBRACK)?)? ID (COMMA ((FLOAT_TYPE|INT_TYPE) (LBRACK RBRACK)?)? ID)*)? RPAREN ':' # FloatFunctionDeclaration
-    | 'def' INT_TYPE ID LPAREN (((FLOAT_TYPE|INT_TYPE) (LBRACK RBRACK)?)? ID (COMMA ((FLOAT_TYPE|INT_TYPE) (LBRACK RBRACK)?)? ID)*)? RPAREN ':' # IntFunctionDeclaration
-    | 'def' INT_TYPE LBRACK RBRACK ID LPAREN (((FLOAT_TYPE|INT_TYPE) (LBRACK RBRACK)?)? ID (COMMA ((FLOAT_TYPE|INT_TYPE) (LBRACK RBRACK)?)? ID)*)? RPAREN ':' # IntListFunctionDecl
-    | 'def' FLOAT_TYPE LBRACK RBRACK ID LPAREN (((FLOAT_TYPE|INT_TYPE) (LBRACK RBRACK)?)? ID (COMMA ((FLOAT_TYPE|INT_TYPE) (LBRACK RBRACK)?)? ID)*)? RPAREN ':' # FloatListFunctionDecl
+    : FLOAT_TYPE ID ('=' UNARY? (FLOAT|INT))? (COMMA ID ('=' UNARY? (FLOAT|INT))?)*                         # FloatDeclaration
+    | INT_TYPE ID ('=' UNARY? INT)? (COMMA ID ('=' UNARY? INT)?)*                                           # IntDeclaration
+    | varType list ID                                                                                       # ListDeclaration // ✓
+    | 'def' FLOAT_TYPE? ID LPAREN ((varType (list)?)? ID (COMMA (varType (list)?)? ID)*)? RPAREN ':'        # FloatFunctionDeclaration
+    | 'def' INT_TYPE ID LPAREN ((varType (list)?)? ID (COMMA (varType (list)?)? ID)*)? RPAREN ':'           # IntFunctionDeclaration
+    | 'def' INT_TYPE list ID LPAREN ((varType (list)?)? ID (COMMA (varType (list)?)? ID)*)? RPAREN ':'      # IntListFunctionDecl
+    | 'def' FLOAT_TYPE list ID LPAREN ((varType (list)?)? ID (COMMA (varType (list)?)? ID)*)? RPAREN ':'    # FloatListFunctionDecl
     ;
 
 assignment
@@ -71,11 +69,14 @@ varType
     | INT_TYPE
     ; 
 
+list
+    : LBRACK RBRACK
+    ;
 // ----------------------- Listas -------------------------
 
 listFunction
     : 'size' LPAREN ID RPAREN                                       # ListSize
-    | 'add' LPAREN ID COMMA expression COMMA expression RPAREN      # ListAdd
+    | 'add' LPAREN expression COMMA expression COMMA expression RPAREN      # ListAdd
     | 'remove' LPAREN ID COMMA expression RPAREN                    # ListRemove
     ;
 
@@ -88,7 +89,7 @@ listFunction
 
 // Parâmetros de funções.
  parameter
-     : (varType (LBRACK RBRACK)?)? ID
+     : (varType (list)?)? ID
      | expression
      ;
 
