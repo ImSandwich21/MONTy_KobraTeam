@@ -24,6 +24,13 @@ public interface MONTyPythonVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCommand(MONTyPythonParser.CommandContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code Flutuante}
+	 * labeled alternative in {@link MONTyPythonParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFlutuante(MONTyPythonParser.FlutuanteContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code Variable}
 	 * labeled alternative in {@link MONTyPythonParser#expression}.
 	 * @param ctx the parse tree
@@ -37,13 +44,6 @@ public interface MONTyPythonVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitUnaryOp(MONTyPythonParser.UnaryOpContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Number}
-	 * labeled alternative in {@link MONTyPythonParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNumber(MONTyPythonParser.NumberContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code GroupExp}
 	 * labeled alternative in {@link MONTyPythonParser#expression}.
@@ -66,13 +66,6 @@ public interface MONTyPythonVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitRelational(MONTyPythonParser.RelationalContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code Logical}
-	 * labeled alternative in {@link MONTyPythonParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLogical(MONTyPythonParser.LogicalContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code Pow}
 	 * labeled alternative in {@link MONTyPythonParser#expression}.
 	 * @param ctx the parse tree
@@ -80,12 +73,44 @@ public interface MONTyPythonVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPow(MONTyPythonParser.PowContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code Logical}
+	 * labeled alternative in {@link MONTyPythonParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLogical(MONTyPythonParser.LogicalContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Inteiro}
+	 * labeled alternative in {@link MONTyPythonParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInteiro(MONTyPythonParser.InteiroContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code MultDiv}
 	 * labeled alternative in {@link MONTyPythonParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitMultDiv(MONTyPythonParser.MultDivContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MONTyPythonParser#number}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNumber(MONTyPythonParser.NumberContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MONTyPythonParser#intExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntExpression(MONTyPythonParser.IntExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MONTyPythonParser#floatExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFloatExpression(MONTyPythonParser.FloatExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code FloatDeclaration}
 	 * labeled alternative in {@link MONTyPythonParser#declaration}.

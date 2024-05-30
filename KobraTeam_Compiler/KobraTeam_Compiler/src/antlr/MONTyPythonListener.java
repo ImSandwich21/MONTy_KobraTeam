@@ -30,6 +30,18 @@ public interface MONTyPythonListener extends ParseTreeListener {
 	 */
 	void exitCommand(MONTyPythonParser.CommandContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code Flutuante}
+	 * labeled alternative in {@link MONTyPythonParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterFlutuante(MONTyPythonParser.FlutuanteContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Flutuante}
+	 * labeled alternative in {@link MONTyPythonParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitFlutuante(MONTyPythonParser.FlutuanteContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code Variable}
 	 * labeled alternative in {@link MONTyPythonParser#expression}.
 	 * @param ctx the parse tree
@@ -53,18 +65,6 @@ public interface MONTyPythonListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitUnaryOp(MONTyPythonParser.UnaryOpContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code Number}
-	 * labeled alternative in {@link MONTyPythonParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterNumber(MONTyPythonParser.NumberContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code Number}
-	 * labeled alternative in {@link MONTyPythonParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitNumber(MONTyPythonParser.NumberContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code GroupExp}
 	 * labeled alternative in {@link MONTyPythonParser#expression}.
@@ -102,18 +102,6 @@ public interface MONTyPythonListener extends ParseTreeListener {
 	 */
 	void exitRelational(MONTyPythonParser.RelationalContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code Logical}
-	 * labeled alternative in {@link MONTyPythonParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterLogical(MONTyPythonParser.LogicalContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code Logical}
-	 * labeled alternative in {@link MONTyPythonParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitLogical(MONTyPythonParser.LogicalContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code Pow}
 	 * labeled alternative in {@link MONTyPythonParser#expression}.
 	 * @param ctx the parse tree
@@ -126,6 +114,30 @@ public interface MONTyPythonListener extends ParseTreeListener {
 	 */
 	void exitPow(MONTyPythonParser.PowContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code Logical}
+	 * labeled alternative in {@link MONTyPythonParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterLogical(MONTyPythonParser.LogicalContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Logical}
+	 * labeled alternative in {@link MONTyPythonParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitLogical(MONTyPythonParser.LogicalContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code Inteiro}
+	 * labeled alternative in {@link MONTyPythonParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterInteiro(MONTyPythonParser.InteiroContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Inteiro}
+	 * labeled alternative in {@link MONTyPythonParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitInteiro(MONTyPythonParser.InteiroContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code MultDiv}
 	 * labeled alternative in {@link MONTyPythonParser#expression}.
 	 * @param ctx the parse tree
@@ -137,6 +149,36 @@ public interface MONTyPythonListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitMultDiv(MONTyPythonParser.MultDivContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MONTyPythonParser#number}.
+	 * @param ctx the parse tree
+	 */
+	void enterNumber(MONTyPythonParser.NumberContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MONTyPythonParser#number}.
+	 * @param ctx the parse tree
+	 */
+	void exitNumber(MONTyPythonParser.NumberContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MONTyPythonParser#intExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterIntExpression(MONTyPythonParser.IntExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MONTyPythonParser#intExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitIntExpression(MONTyPythonParser.IntExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MONTyPythonParser#floatExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterFloatExpression(MONTyPythonParser.FloatExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MONTyPythonParser#floatExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitFloatExpression(MONTyPythonParser.FloatExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code FloatDeclaration}
 	 * labeled alternative in {@link MONTyPythonParser#declaration}.

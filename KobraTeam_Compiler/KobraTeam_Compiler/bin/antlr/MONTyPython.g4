@@ -36,21 +36,34 @@ command
     ; 
 
 expression
-    : NOT? LPAREN expression RPAREN                         # GroupExp
-    | expression (POW)                                      # Pow
-    | expression op=(MULT|DIV|MOD|DIV_INT) expression       # MultDiv
-    | expression op=UNARY expression                        # UnaryOp
-    | expression (RELATIONAL_OP) expression                 # Relational
-    | expression op=LOGIC expression                        # Logical
-    | ID LBRACK ID RBRACK                                   # ListIndex
-    | ID                                                    # Variable
-    | UNARY? (FLOAT|INT)                                    # Number                                            
+    : NOT? LPAREN expression RPAREN                         # GroupExp // ✓
+    | expression POW expression                            # Pow // ✓
+    | expression op=(MULT|DIV|MOD|DIV_INT) expression       # MultDiv // ✓
+    | expression op=UNARY expression                        # UnaryOp // ✓
+    | expression (RELATIONAL_OP) expression                 # Relational // ✓
+    | expression op=LOGIC expression                        # Logical // ✓
+    | ID LBRACK INT RBRACK                                   # ListIndex // ✓ 
+    | ID                                                    # Variable // ✓ 
+    | floatExpression                                          # Flutuante // ✓        
+    | intExpression                                            # Inteiro // ✓
+    ;
+
+number
+    : (intExpression | floatExpression)
+    ;
+
+intExpression
+    : UNARY? INT
+    ;
+
+floatExpression
+    : UNARY? FLOAT
     ;
 
 // ----------------------- Variáveis -----------------------
 declaration
-    : FLOAT_TYPE ID ('=' UNARY? (FLOAT|INT))? (COMMA ID ('=' UNARY? (FLOAT|INT))?)*                         # FloatDeclaration
-    | INT_TYPE ID ('=' UNARY? INT)? (COMMA ID ('=' UNARY? INT)?)*                                           # IntDeclaration
+    : FLOAT_TYPE ID ('=' number)? (COMMA ID ('=' number)?)*                                                 # FloatDeclaration // ✓
+    | INT_TYPE ID ('=' intExpression)? (COMMA ID ('=' intExpression)?)*                                     # IntDeclaration // ✓
     | varType list ID                                                                                       # ListDeclaration // ✓
     | 'def' FLOAT_TYPE? ID LPAREN ((varType (list)?)? ID (COMMA (varType (list)?)? ID)*)? RPAREN ':'        # FloatFunctionDeclaration
     | 'def' INT_TYPE ID LPAREN ((varType (list)?)? ID (COMMA (varType (list)?)? ID)*)? RPAREN ':'           # IntFunctionDeclaration
@@ -93,7 +106,7 @@ listFunction
     ;
     
  whileLoop
-     :'while' expression ':'    # WhileInstrunction // ✓
+     :'while' expression ':'   # WhileInstrunction // ✓
      ;
 
 // ----------------------- Condicionais -----------------------
@@ -109,7 +122,7 @@ listFunction
      ;
 
  printStatement
-    : 'print' LPAREN (expression|STRING) (COMMA (expression|STRING))* RPAREN # PrintFunction
+    : 'print' LPAREN (expression|STRING) (COMMA (expression|STRING))* RPAREN # PrintFunction // ✓
     ;
 
  returnStatement

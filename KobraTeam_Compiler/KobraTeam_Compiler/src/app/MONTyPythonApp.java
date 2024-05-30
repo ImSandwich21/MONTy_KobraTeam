@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import antlr.MONTyPythonLexer;
 import antlr.MONTyPythonParser;
 import expression.AntlrToProgram;
+import expression.ExpressionProcessor;
 import expression.MyErroListener;
 import expression.Prog;
 
@@ -36,12 +37,12 @@ public class MONTyPythonApp
 
                 if(progVisitor.semanticErros.isEmpty())
                 {
-                    //ExpressionProcessor ep = new ExpressionProcessor(prog.expressions);
+                    ExpressionProcessor ep = new ExpressionProcessor(prog.expressions);
 
-                    //for(String evaluation: ep.getEvaluationResults())
-                    //{
-                        //System.out.println(evaluation);
-                    //}
+                    for(String evaluation: ep.getEvaluationResults())
+                    {
+                        System.out.println(evaluation);
+                    }
                 }
                 else
                 {

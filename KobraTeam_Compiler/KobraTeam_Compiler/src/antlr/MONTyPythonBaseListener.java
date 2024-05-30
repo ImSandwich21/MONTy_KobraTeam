@@ -41,6 +41,18 @@ public class MONTyPythonBaseListener implements MONTyPythonListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterFlutuante(MONTyPythonParser.FlutuanteContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFlutuante(MONTyPythonParser.FlutuanteContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterVariable(MONTyPythonParser.VariableContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -60,18 +72,6 @@ public class MONTyPythonBaseListener implements MONTyPythonListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitUnaryOp(MONTyPythonParser.UnaryOpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterNumber(MONTyPythonParser.NumberContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitNumber(MONTyPythonParser.NumberContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -113,18 +113,6 @@ public class MONTyPythonBaseListener implements MONTyPythonListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLogical(MONTyPythonParser.LogicalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLogical(MONTyPythonParser.LogicalContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterPow(MONTyPythonParser.PowContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -137,6 +125,30 @@ public class MONTyPythonBaseListener implements MONTyPythonListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterLogical(MONTyPythonParser.LogicalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLogical(MONTyPythonParser.LogicalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInteiro(MONTyPythonParser.InteiroContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInteiro(MONTyPythonParser.InteiroContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterMultDiv(MONTyPythonParser.MultDivContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -144,6 +156,42 @@ public class MONTyPythonBaseListener implements MONTyPythonListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitMultDiv(MONTyPythonParser.MultDivContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNumber(MONTyPythonParser.NumberContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNumber(MONTyPythonParser.NumberContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIntExpression(MONTyPythonParser.IntExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIntExpression(MONTyPythonParser.IntExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFloatExpression(MONTyPythonParser.FloatExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFloatExpression(MONTyPythonParser.FloatExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

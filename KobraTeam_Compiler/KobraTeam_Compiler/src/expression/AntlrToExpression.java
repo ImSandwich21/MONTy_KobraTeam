@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.antlr.v4.parse.ANTLRParser.elementOptions_return;
-import org.antlr.v4.parse.ANTLRParser.id_return;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -15,6 +13,7 @@ import antlr.MONTyPythonBaseVisitor;
 import antlr.MONTyPythonParser.FloatDeclarationContext;
 import antlr.MONTyPythonParser.FloatFunctionDeclarationContext;
 import antlr.MONTyPythonParser.FloatListFunctionDeclContext;
+import antlr.MONTyPythonParser.FlutuanteContext;
 import antlr.MONTyPythonParser.ForInstructionContext;
 import antlr.MONTyPythonParser.FuncCallContext;
 import antlr.MONTyPythonParser.GroupExpContext;
@@ -23,16 +22,18 @@ import antlr.MONTyPythonParser.InputFunctionContext;
 import antlr.MONTyPythonParser.IntDeclarationContext;
 import antlr.MONTyPythonParser.IntFunctionDeclarationContext;
 import antlr.MONTyPythonParser.IntListFunctionDeclContext;
+import antlr.MONTyPythonParser.InteiroContext;
 import antlr.MONTyPythonParser.ListAddContext;
 import antlr.MONTyPythonParser.ListAssignContext;
 import antlr.MONTyPythonParser.ListDeclarationContext;
 import antlr.MONTyPythonParser.ListIndexContext;
 import antlr.MONTyPythonParser.ListRemoveContext;
 import antlr.MONTyPythonParser.ListSizeContext;
+import antlr.MONTyPythonParser.LogicalContext;
 import antlr.MONTyPythonParser.MultDivContext;
-import antlr.MONTyPythonParser.NumberContext;
 import antlr.MONTyPythonParser.PowContext;
 import antlr.MONTyPythonParser.PrintFunctionContext;
+import antlr.MONTyPythonParser.RelationalContext;
 import antlr.MONTyPythonParser.UnaryOpContext;
 import antlr.MONTyPythonParser.VariableAssignContext;
 import antlr.MONTyPythonParser.VariableContext;
@@ -41,19 +42,56 @@ import antlr.MONTyPythonParser.WhileInstrunctionContext;
 
 public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
 {
-    private Map<String, String> vars;
+    private List<String> vars;
     private List<String> semanticErrors;
 
     public AntlrToExpression(List<String> _semanticErros)
     {
-        vars = new HashMap<>();
+        vars = new ArrayList<>();
         this.semanticErrors = _semanticErros;
     }
 
     @Override
-    public Expression visitFloatDeclaration(FloatDeclarationContext arg0) {
-        
-        return super.visitFloatDeclaration(arg0);
+    public Expression visitFloatDeclaration(FloatDeclarationContext ctx) 
+    {
+        Map<String, Number> values = new HashMap<>();
+
+        for (int i = 0; i < ctx.ID().size(); i++)
+        {
+            Token idToken = ctx.ID(i).getSymbol();
+            
+            String id = ctx.getChild(0).getText();
+            if (vars.contains(id))
+            {
+                int line = idToken.getLine();
+                int column = idToken.getCharPositionInLine() + 1;
+                semanticErrors.add("Error: variable " + id + " already declared (" + line + ", " + column + ")");
+            }
+            else
+            {
+                vars.add(id);
+            }
+
+            // Verifica se o ID declarado não está na última posição e podemos obter valor
+            int idIndex = ctx.children.indexOf(ctx.ID(i));
+            if (idIndex < ctx.children.size() - 2)
+            {
+                String possibleValue = ctx.getChild(idIndex + 2).getText();
+
+                try 
+                {
+                    float numValue = Float.parseFloat(possibleValue);
+                    
+                    values.put(id, numValue);
+                } 
+                catch (NumberFormatException e) 
+                {
+                    values.put(id, 0);
+                }
+            }
+        }
+
+        return new FloatDeclaration(values);
     }
 
     @Override
@@ -77,7 +115,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
         Token idToken = ctx.ID().getSymbol();
 
         String id = idToken.getText();
-        if (!vars.containsKey(id))
+        if (!vars.contains(id))
         {
             int line = idToken.getLine();
             int column = idToken.getCharPositionInLine() + 1;
@@ -95,31 +133,63 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
     }
 
     @Override
-    public Expression visitGroupExp(GroupExpContext arg0) {
-        return super.visitGroupExp(arg0);
+    public Expression visitGroupExp(GroupExpContext ctx)
+    {
+        String negado = ctx.NOT().getText();
+        Expression expression = visit(ctx.expression());
+
+        return new GroupExp(expression, !negado.isEmpty());
     }
 
     @Override
     public Expression visitIntDeclaration(IntDeclarationContext ctx) 
     {
-        String type = ctx.getChild(0).getText();
-        
-        for (int i = 0; i < ctx.ID().size() - 1; i++)
+        Map<String, Integer> values = new HashMap<>();
+
+        for (int i = 0; i < ctx.ID().size(); i++)
         {
-            String id = ctx.ID(i).getText();
-            //int index = ctx.children.indexOf(id);
-            if (vars.containsKey(id))
+            Token idToken = ctx.ID(i).getSymbol();
+            
+            String id = ctx.getChild(0).getText();
+            if (vars.contains(id))
             {
-                semanticErrors.add("Error: variable " + id + " already declared.");
+                int line = idToken.getLine();
+                int column = idToken.getCharPositionInLine() + 1;
+                semanticErrors.add("Error: variable " + id + " already declared (" + line + ", " + column + ")");
             }
             else
             {
-                vars.put(id, type);
+                vars.add(id);
+            }
+
+            // Verifica se o ID declarado não está na última posição e podemos obter valor
+            int idIndex = ctx.children.indexOf(ctx.ID(i));
+            if (idIndex < ctx.children.size() - 2)
+            {
+                String possibleValue = ctx.getChild(idIndex + 2).getText();
+
+                try 
+                {
+                    int intValue = Integer.parseInt(possibleValue);
+                    
+                    values.put(id, intValue);
+                } 
+                catch (NumberFormatException e) 
+                {
+                    values.put(id, 0);
+                }
             }
         }
-        // int x, y = 1, z
 
-        return new IntDeclaration(type, "teste", 0);
+        return new IntDeclaration(values);
+    }
+
+    @Override
+    public Expression visitFlutuante(FlutuanteContext ctx) 
+    {
+        String floatText = visit(ctx.floatExpression()).toString();
+        float f = Float.parseFloat(floatText);
+        return new Flutuante(f);
     }
 
     @Override
@@ -129,7 +199,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
         Token idToken = ctx.ID().getSymbol();
 
         String id = ctx.getChild(0).getText();
-        if (vars.containsKey(id))
+        if (vars.contains(id))
         {
             int line = idToken.getLine();
             int column = idToken.getCharPositionInLine() + 1;
@@ -137,7 +207,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
         }
         else
         {
-            vars.put(id, type);
+            vars.add(id);
         }
 
         return new ListDeclaration(type, id);
@@ -149,13 +219,21 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
     }
 
     @Override
+    public Expression visitPow(PowContext ctx)
+    {
+        Expression left = visit(ctx.getChild(0));
+        Expression right = visit(ctx.getChild(2));
+        return new Pow(left, right);
+    }
+
+    @Override
     public Expression visitInputFunction(InputFunctionContext ctx) 
     {
         Token idToken = ctx.ID().getSymbol();
         String type = ctx.getChild(0).getText();
 
         String id = idToken.getText();
-        if (vars.containsKey(id))
+        if (vars.contains(id))
         {
             if (type != id)
             {
@@ -166,14 +244,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
         }
         else
         {
-            if (type == id)
-            {
-                vars.put(id,"float");
-            }
-            else
-            {
-                vars.put(id,type);
-            }
+            vars.add(id);
         }
 
         String msg = ctx.STRING().getText();
@@ -197,7 +268,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
         Token idToken = ctx.ID().getSymbol();
 
         String id = idToken.getText();
-        if (!vars.containsKey(id))
+        if (!vars.contains(id))
         {
             int line = idToken.getLine();
             int column = idToken.getCharPositionInLine() + 1;
@@ -215,13 +286,13 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
     {
         String id = ctx.ID().getText();
 
-        if (!vars.containsKey(id))
+        if (!vars.contains(id))
         {
             // Se não tiver sido anteriormente declarado assume tipo float
-            vars.put("float", id);
+            vars.add(id);
         }
 
-        List<Integer> values = new ArrayList<>();
+        List<Number> values = new ArrayList<>();
 
         for (TerminalNode value : ctx.INT()) 
         {
@@ -232,8 +303,41 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
     }
 
     @Override
-    public Expression visitListIndex(ListIndexContext arg0) {
-        return super.visitListIndex(arg0);
+    public Expression visitListIndex(ListIndexContext ctx) 
+    {
+        Token idToken = ctx.ID().getSymbol();
+
+        String id = idToken.getText();
+        if (!vars.contains(id))
+        {
+            int line = idToken.getLine();
+            int column = idToken.getCharPositionInLine() + 1;
+            semanticErrors.add("Error: variable " + id + " not declared (" + line + ", " + column + ")");
+        }
+
+        int index = Integer.parseInt(ctx.INT().getText());
+
+        return new ListIndex(id, index);
+    }
+
+    @Override
+    public Expression visitRelational(RelationalContext ctx)
+    {
+        Expression left = visit(ctx.getChild(0));
+        Expression right = visit(ctx.getChild(2));
+        String operator = ctx.RELATIONAL_OP().getText();
+
+        return new Relational(left, right, operator);
+    }
+
+    @Override
+    public Expression visitLogical(LogicalContext ctx)
+    {
+        Expression left = visit(ctx.getChild(0));
+        Expression right = visit(ctx.getChild(2));
+        String operator = ctx.LOGIC().getText();
+
+        return new Logical(left, right, operator);
     }
 
     @Override
@@ -242,7 +346,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
         Token idToken = ctx.ID().getSymbol();
 
         String id = idToken.getText();
-        if (!vars.containsKey(id))
+        if (!vars.contains(id))
         {
             int line = idToken.getLine();
             int column = idToken.getCharPositionInLine() + 1;
@@ -260,7 +364,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
         Token idToken = ctx.ID().getSymbol();
         
         String id = idToken.getText();
-        if (!vars.containsKey(id))
+        if (!vars.contains(id))
         {
             int line = idToken.getLine();
             int column = idToken.getCharPositionInLine() + 1;
@@ -271,36 +375,65 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
     }
 
     @Override
-    public Expression visitMultDiv(MultDivContext arg0) {
-        return super.visitMultDiv(arg0);
+    public Expression visitMultDiv(MultDivContext ctx)
+    {
+        Expression left = visit(ctx.getChild(0));
+        Expression right = visit(ctx.getChild(2));
+        String operator = ctx.op.getText();
+
+        return new MultDiv(left, right, operator);
     }
 
     @Override
-    public Expression visitNumber(NumberContext arg0) {
-        return super.visitNumber(arg0);
-    }
-
-    @Override
-    public Expression visitPow(PowContext arg0) {
-        return super.visitPow(arg0);
+    public Expression visitInteiro(InteiroContext ctx) 
+    {
+        String intText = visit(ctx.intExpression()).toString();
+        int f = Integer.parseInt(intText);
+        return new Inteiro(f);
     }
 
     @Override
     public Expression visitPrintFunction(PrintFunctionContext ctx) 
     {
-        
+        Map<Integer, String> parametros1 = new HashMap<>();
+        Map<Integer, Expression> parametros2 = new HashMap<>();
 
-        return new PrintFunction();
+        for (TerminalNode n : ctx.STRING()) 
+        {
+            parametros1.put(ctx.children.indexOf(n), n.getText());
+        }
+        for (int i = 0; i < ctx.expression().size(); i++)
+        {
+            parametros2.put(ctx.children.indexOf(ctx.expression(i)), visit(ctx.expression(i)));
+        }
+
+        return new PrintFunction(parametros1, parametros2);
     }
 
     @Override
-    public Expression visitUnaryOp(UnaryOpContext arg0) {
-        return super.visitUnaryOp(arg0);
+    public Expression visitUnaryOp(UnaryOpContext ctx)
+    {
+        Expression left = visit(ctx.getChild(0));
+        Expression right = visit(ctx.getChild(2));
+        String operator = ctx.UNARY().getText();
+
+        return new Logical(left, right, operator);
     }
 
     @Override
-    public Expression visitVariable(VariableContext arg0) {
-        return super.visitVariable(arg0);
+    public Expression visitVariable(VariableContext ctx) 
+    {
+        Token idToken = ctx.ID().getSymbol();
+        int line = idToken.getLine();
+        int column = idToken.getCharPositionInLine() + 1;
+
+        String id = ctx.getChild(0).getText();
+        if (!vars.contains(id))
+        {
+            semanticErrors.add("Error: variable " + id + " not declared (" + line + ", " + column + ")");
+        }
+
+        return new Variable(id);
     }
 
     @Override
@@ -309,7 +442,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
         Token idToken = ctx.ID().getSymbol();
 
         String id = idToken.getText();
-        if (!vars.containsKey(id))
+        if (!vars.contains(id))
         {
             int line = idToken.getLine();
             int column = idToken.getCharPositionInLine() + 1;

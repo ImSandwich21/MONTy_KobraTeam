@@ -16,7 +16,7 @@ public class InputFunction extends Expression
     @Override
     public String toString() 
     {
-        return  type + (type.length() == 0 ? "": " ") + id +  " = (" + msg + ")";
+        return  type + (type.isEmpty() ? "": " ") + id +  " = (" + msg + ")";
     }
 
     
