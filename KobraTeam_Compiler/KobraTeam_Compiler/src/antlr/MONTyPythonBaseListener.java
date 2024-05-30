@@ -329,18 +329,6 @@ public class MONTyPythonBaseListener implements MONTyPythonListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParameter(MONTyPythonParser.ParameterContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitParameter(MONTyPythonParser.ParameterContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterForInstruction(MONTyPythonParser.ForInstructionContext ctx) { }
 	/**
 	 * {@inheritDoc}

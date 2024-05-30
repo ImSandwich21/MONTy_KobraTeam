@@ -59,8 +59,8 @@ declaration
     ;
 
 assignment
-    : ID '=' expression                             # VariableAssign
-    | ID '=' LBRACK INT (COMMA INT)* RBRACK         # ListAssign
+    : ID '=' expression                             # VariableAssign // ✓
+    | ID '=' LBRACK INT (COMMA INT)* RBRACK         # ListAssign // ✓
     ;
 
 // Tipo de variável.
@@ -75,43 +75,37 @@ list
 // ----------------------- Listas -------------------------
 
 listFunction
-    : 'size' LPAREN ID RPAREN                                       # ListSize
-    | 'add' LPAREN expression COMMA expression COMMA expression RPAREN      # ListAdd
-    | 'remove' LPAREN ID COMMA expression RPAREN                    # ListRemove
+    : 'size' LPAREN ID RPAREN                                       # ListSize // ✓
+    | 'add' LPAREN ID COMMA expression COMMA expression RPAREN      # ListAdd // ✓
+    | 'remove' LPAREN ID COMMA INT RPAREN                    # ListRemove // ✓
     ;
 
 // ----------------------- Funções -------------------------
 
  // Chamada de funções.
  functionCall
-     : ID LPAREN (parameter (COMMA parameter)*)? RPAREN     # FuncCall
+     : ID LPAREN (expression (COMMA expression)*)? RPAREN     # FuncCall // ✓
      ;    
-
-// Parâmetros de funções.
- parameter
-     : (varType (list)?)? ID
-     | expression
-     ;
 
 // // ----------------------- Ciclos -----------------------
  forLoop
-    : 'for' ID 'in' (ID|'range' LPAREN expression (COMMA expression)* RPAREN) ':' # ForInstruction
+    : 'for' ID 'in' (ID|'range' LPAREN INT (COMMA INT)? (COMMA INT)? RPAREN) ':' # ForInstruction
     ;
     
  whileLoop
-     :'while' expression ':'    # WhileInstrunction
+     :'while' expression ':'    # WhileInstrunction // ✓
      ;
 
 // ----------------------- Condicionais -----------------------
  
  ifStatement
-    : 'if' expression ':'  ('elif' expression ':' )* ('else' ':' )? # IfInstruction
+    : 'if' expression ':' ('elif' expression ':' )* ('else' ':' )? # IfInstruction
     ;
 
 // ----------------------- Entrada e Saída -----------------------
  
  inputStatement
-     :varType? ID '=' 'input' LPAREN STRING RPAREN      # InputFunction
+     :varType? ID '=' 'input' LPAREN STRING RPAREN      # InputFunction // ✓
      ;
 
  printStatement

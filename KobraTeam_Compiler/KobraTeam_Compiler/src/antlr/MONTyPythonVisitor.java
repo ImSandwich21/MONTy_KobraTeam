@@ -190,12 +190,6 @@ public interface MONTyPythonVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFuncCall(MONTyPythonParser.FuncCallContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MONTyPythonParser#parameter}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParameter(MONTyPythonParser.ParameterContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code ForInstruction}
 	 * labeled alternative in {@link MONTyPythonParser#forLoop}.
 	 * @param ctx the parse tree

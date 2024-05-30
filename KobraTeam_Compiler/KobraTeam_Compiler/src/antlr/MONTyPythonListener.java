@@ -314,16 +314,6 @@ public interface MONTyPythonListener extends ParseTreeListener {
 	 */
 	void exitFuncCall(MONTyPythonParser.FuncCallContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MONTyPythonParser#parameter}.
-	 * @param ctx the parse tree
-	 */
-	void enterParameter(MONTyPythonParser.ParameterContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MONTyPythonParser#parameter}.
-	 * @param ctx the parse tree
-	 */
-	void exitParameter(MONTyPythonParser.ParameterContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code ForInstruction}
 	 * labeled alternative in {@link MONTyPythonParser#forLoop}.
 	 * @param ctx the parse tree
