@@ -12,12 +12,15 @@ public class ExpressionProcessor
     public Map<String, String> variaveisTipo;
     public Map<String, List<Number>> variaveisLista;
 
+    public List<String> codigoIntermediario;
+
     public ExpressionProcessor(List<Expression> list)
     {
         this.list = list;
         variaveisValor = new HashMap<>();
         variaveisTipo = new HashMap<>();
         variaveisLista = new HashMap<>();
+        codigoIntermediario = new ArrayList<>();
     }
 
     public List<String> getEvaluationResults()
@@ -162,8 +165,8 @@ public class ExpressionProcessor
         {
             Logical l = (Logical) e;
 
-            Number left = getEvalResult(l, evaluations);
-            Number right = getEvalResult(l, evaluations);
+            Number left = getEvalResult(l.left, evaluations);
+            Number right = getEvalResult(l.right, evaluations);
 
             if (l.operator == "AND")
             {
@@ -177,8 +180,8 @@ public class ExpressionProcessor
         else if (e instanceof Relational)
         {
             Relational r = (Relational) e;
-            Number left = getEvalResult(r, evaluations);
-            Number right = getEvalResult(r, evaluations);
+            Number left = getEvalResult(r.left, evaluations);
+            Number right = getEvalResult(r.right, evaluations);
 
             switch (r.operator) 
             {
@@ -201,8 +204,8 @@ public class ExpressionProcessor
         else if (e instanceof UnaryOp)
         {
             UnaryOp u = (UnaryOp) e;
-            Number left = getEvalResult(u, evaluations);
-            Number right = getEvalResult(u, evaluations);
+            Number left = getEvalResult(u.left, evaluations);
+            Number right = getEvalResult(u.right, evaluations);
 
             if (u.operator == "-")
             {
@@ -216,8 +219,8 @@ public class ExpressionProcessor
         else if (e instanceof MultDiv)
         {
             MultDiv md = (MultDiv) e;
-            Number left = getEvalResult(md, evaluations);
-            Number right = getEvalResult(md, evaluations);
+            Number left = getEvalResult(md.left, evaluations);
+            Number right = getEvalResult(md.right, evaluations);
 
             switch (md.operator) 
             {
@@ -232,7 +235,7 @@ public class ExpressionProcessor
                     }
                     else
                     {
-                        evaluations.add("Both values must be of Type Integer");
+                        evaluations.add("Both values must be of Type Integer (" + left.toString() + ", " + right.toString() + ")");
                     }
                 case "//":
                     if (left instanceof Integer && right instanceof Integer)
@@ -241,10 +244,31 @@ public class ExpressionProcessor
                     }
                     else
                     {
-                        evaluations.add("Both values must be of Type Integer");
+                        evaluations.add("Both values must be of Type Integer (" + left.toString() + ", " + right.toString() + ")");
                     }
                 default:
                     break;
+            }
+        }
+        else if (e instanceof Pow)
+        {
+            Pow p = (Pow) e;
+            Number left = getEvalResult(p.left, evaluations);
+            Number right = getEvalResult(p.rigth, evaluations);
+
+            return Math.pow(left.doubleValue(), right.doubleValue());
+        }
+        else if (e instanceof GroupExp)
+        {
+            GroupExp ge = (GroupExp) e;
+
+            if (ge.negado)
+            {
+                return (getEvalResult(ge.expression, evaluations).intValue() > 0 ? 0 : 1);
+            }
+            else
+            {
+                return getEvalResult(ge.expression, evaluations);
             }
         }
 

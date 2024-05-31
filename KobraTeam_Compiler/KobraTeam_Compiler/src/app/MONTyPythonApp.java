@@ -1,5 +1,8 @@
 package app;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 import org.antlr.v4.runtime.CharStream;
@@ -28,7 +31,9 @@ public class MONTyPythonApp
             MONTyPythonParser parser = getParser(fileName);
 
             ParseTree antlrAST = parser.program();
-            
+
+            ImprimirConteudoFicheiro(fileName);
+
             if(!MyErroListener.hasError)
             {
                 // Create a visitor for converting the parse tree into Program/Expression object
@@ -38,6 +43,14 @@ public class MONTyPythonApp
                 if(progVisitor.semanticErros.isEmpty())
                 {
                     ExpressionProcessor ep = new ExpressionProcessor(prog.expressions);
+
+                    System.out.println("\nCódigo intermediário");
+                    for(String codIntermediadrio: ep.codigoIntermediario)
+                    {
+                        System.out.println(codIntermediadrio);
+                    }
+
+                    System.out.println("\nCódigo compilado");
 
                     for(String evaluation: ep.getEvaluationResults())
                     {
@@ -52,6 +65,32 @@ public class MONTyPythonApp
                     }
                 }
             }
+        }
+    }
+
+    private static void ImprimirConteudoFicheiro(String fileName)
+    {
+        try 
+        {
+            FileReader reader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) 
+            {
+                System.out.println(line);
+            }
+
+            bufferedReader.close();
+            reader.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            System.err.println("Error: File not found: " + fileName);
+        }
+        catch (IOException e)
+        {
+            System.err.println("Error reading file: " + fileName);
         }
     }
 
