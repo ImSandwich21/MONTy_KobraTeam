@@ -2,17 +2,21 @@ package expression;
 
 public class WhileInstrunction extends Expression
 {
-    public Expression condicao;
+    public Expression left;
+    public Expression right;
+    public String op;
 
-    public WhileInstrunction(Expression condicao)
+    public WhileInstrunction(Expression left, Expression right, String op)
     {
-        this.condicao = condicao;
+        this.left = left;
+        this.right = right;
+        this.op = op;
     }
 
     @Override
     public String toString()
     {
-        return "while " + condicao + ":";
+        return "while " + left.toString() + op + right.toString() + ":";
     }
 
     

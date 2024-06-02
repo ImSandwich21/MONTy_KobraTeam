@@ -60,7 +60,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
         {
             Token idToken = ctx.ID(i).getSymbol();
             
-            String id = ctx.getChild(0).getText();
+            String id = idToken.getText();
             if (vars.contains(id))
             {
                 int line = idToken.getLine();
@@ -150,7 +150,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
         {
             Token idToken = ctx.ID(i).getSymbol();
             
-            String id = ctx.getChild(0).getText();
+            String id = idToken.getText();
             if (vars.contains(id))
             {
                 int line = idToken.getLine();
@@ -164,7 +164,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
 
             // Verifica se o ID declarado não está na última posição e podemos obter valor
             int idIndex = ctx.children.indexOf(ctx.ID(i));
-            if (idIndex < ctx.children.size() - 2)
+            if (idIndex < ctx.children.size() - 1)
             {
                 String possibleValue = ctx.getChild(idIndex + 2).getText();
 
@@ -187,7 +187,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
     @Override
     public Expression visitFlutuante(FlutuanteContext ctx) 
     {
-        String floatText = visit(ctx.floatExpression()).toString();
+        String floatText = ctx.floatExpression().getText();
         float f = Float.parseFloat(floatText);
         return new Flutuante(f);
     }
@@ -387,7 +387,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
     @Override
     public Expression visitInteiro(InteiroContext ctx) 
     {
-        String intText = visit(ctx.intExpression()).toString();
+        String intText = ctx.intExpression().getText();
         int f = Integer.parseInt(intText);
         return new Inteiro(f);
     }
@@ -413,7 +413,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
     @Override
     public Expression visitUnaryOp(UnaryOpContext ctx)
     {
-        Expression left = visit(ctx.getChild(0));
+        Expression left = visit(ctx.getChild(1));
         Expression right = visit(ctx.getChild(2));
         String operator = ctx.UNARY().getText();
 
@@ -457,10 +457,11 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
     @Override
     public Expression visitWhileInstrunction(WhileInstrunctionContext ctx) 
     {
-        Expression condicao = visit(ctx.expression());
+        Expression left = visit(ctx.expression(0));
+        Expression right = visit(ctx.expression(1));
+        String op = ctx.RELATIONAL_OP().getText();;
 
-        return new WhileInstrunction(condicao);
+        return new WhileInstrunction(left, right, op);
     }
-
     
 }

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -32,6 +31,7 @@ public class MONTyPythonApp
 
             ParseTree antlrAST = parser.program();
 
+            System.out.println("\nCódigo de origem");
             ImprimirConteudoFicheiro(fileName);
 
             if(!MyErroListener.hasError)
@@ -42,10 +42,11 @@ public class MONTyPythonApp
 
                 if(progVisitor.semanticErros.isEmpty())
                 {
+
                     ExpressionProcessor ep = new ExpressionProcessor(prog.expressions);
 
                     System.out.println("\nCódigo intermediário");
-                    for(String codIntermediadrio: ep.codigoIntermediario)
+                    for(String codIntermediadrio: ep.getMiddleCode())
                     {
                         System.out.println(codIntermediadrio);
                     }

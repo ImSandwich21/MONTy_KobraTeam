@@ -106,7 +106,7 @@ listFunction
     ;
     
  whileLoop
-     :'while' expression ':'   # WhileInstrunction // ✓
+     :'while' expression (RELATIONAL_OP) expression ':'   # WhileInstrunction // ✓
      ;
 
 // ----------------------- Condicionais -----------------------
