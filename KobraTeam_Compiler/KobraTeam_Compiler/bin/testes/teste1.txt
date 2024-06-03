@@ -2,4 +2,8 @@ int x, y = 3, z
 
 x = y + 2
 
-while x < 10 :
+float[] lista
+
+lista = [1,2,3]
+
+add(lista, 2, 4)
