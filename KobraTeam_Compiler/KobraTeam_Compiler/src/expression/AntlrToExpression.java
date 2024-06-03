@@ -198,7 +198,7 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
         String type = ctx.getChild(0).getText();
         Token idToken = ctx.ID().getSymbol();
 
-        String id = ctx.getChild(0).getText();
+        String id = idToken.getText();
         if (vars.contains(id))
         {
             int line = idToken.getLine();
@@ -413,11 +413,12 @@ public class AntlrToExpression extends MONTyPythonBaseVisitor<Expression>
     @Override
     public Expression visitUnaryOp(UnaryOpContext ctx)
     {
-        Expression left = visit(ctx.getChild(1));
+        Expression left = visit(ctx.getChild(0));
         Expression right = visit(ctx.getChild(2));
         String operator = ctx.UNARY().getText();
+        String completeExpression = ctx.getChild(0).getText() + ctx.UNARY().getText() + ctx.getChild(2).getText();
 
-        return new Logical(left, right, operator);
+        return new UnaryOp(left, right, operator, completeExpression);
     }
 
     @Override

@@ -204,7 +204,7 @@ public class ExpressionProcessor
                 variaveisTipo.put(decl.id, decl.type + "[]");
                 variaveisLista.put(decl.id, new ArrayList<>());
 
-                evaluations.add(decl.type + "[]" + decl.id + " = []");
+                evaluations.add(decl.type + "[] " + decl.id + " = []");
             }
             else if(e instanceof VariableAssign)
             {
@@ -217,7 +217,8 @@ public class ExpressionProcessor
                 Number resultado = getEvalResult(va.value, evaluations);
 
                 variaveisValor.put(va.id, variaveisTipo.get(va.id) == "int" ? resultado.intValue() : resultado);
-                evaluations.add(va.id + " = " +  resultado);
+                
+                evaluations.add(va.id + " = " +  (variaveisTipo.get(va.id) == "int" ? resultado.intValue() : resultado));
             }
             else if(e instanceof ListAssign)
             {
