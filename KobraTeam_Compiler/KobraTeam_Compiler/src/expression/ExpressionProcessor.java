@@ -479,4 +479,184 @@ public class ExpressionProcessor
 
         return result;
     }
+
+    public List<String> getAssemblyCode(List<String> intermediateCode) {
+        List<String> assemblyCode = new ArrayList<>();
+
+        int checkvar = 0;
+        int checklist = 0;
+
+        for (String instruction : intermediateCode) {
+            // Remove leading and trailing whitespace
+            instruction = instruction.trim();
+
+            // Split instructions that are concatenated with new lines
+            String[] instructions = instruction.split("\\n");
+
+            for (String instr : instructions) {
+                instr = instr.trim(); // Trim each instruction
+
+                if (instr.matches("int\\s+\\w+\\s*=\\s*\\d+")) { // Declaracao implicita de tipo "int x = 0"
+
+                    String instructionWithoutType = instr.replaceFirst("int\\s+", "");
+                    String[] parts = instructionWithoutType.split("\\s*=\\s*");
+                    String var = parts[0];
+                    String value = parts[1];
+                    if (checkvar == 0) {
+                        assemblyCode.add("\n; Inicialização das variáveis");
+                        checkvar = 1;
+                    }
+                    assemblyCode.add("MOV " + var + ", " + value + "    ; int " + var + " = " + value);
+
+                } else if (instr.matches("float\\s+\\w+\\s*=\\s*\\d+")) { // Declaracao implicita de tipo "float x = 0"
+
+                    String instructionWithoutType = instr.replaceFirst("float\\s+", "");
+                    String[] parts = instructionWithoutType.split("\\s*=\\s*");
+                    String var = parts[0];
+                    String value = parts[1];
+                    if (checkvar == 0) {
+                        assemblyCode.add("\n; Inicialização das variáveis");
+                        checkvar = 1;
+                    }
+                    assemblyCode.add("MOV " + var + ", " + value + "    ; int " + var + " = " + value);
+
+                } else if (instr.matches("float\\[\\]\\s+\\w+\\s*=\\s*\\[\\]")) { // Matches initialization like
+                                                                                  // "float[] lista = []"
+
+                    String var = instr.replaceFirst("float\\[\\]\\s+", "").split("\\s*=\\s*")[0];
+
+                    if (checklist == 0) {
+                        assemblyCode.add("\n; Alocação e Inicialização da lista");
+                        checklist = 1;
+                    }
+
+                    assemblyCode.add("ALLOC " + var + "    ; Aloca espaço para a lista");
+
+                } else if (instr.matches("int\\[\\]\\s+\\w+\\s*=\\s*\\[\\]")) { // Matches initialization like "int[]
+                                                                                // lista = []"
+
+                    String var = instr.replaceFirst("int\\[\\]\\s+", "").split("\\s*=\\s*")[0];
+
+                    if (checklist == 0) {
+                        assemblyCode.add("\n; Alocação e Inicialização da lista");
+                        checklist = 1;
+                    }
+
+                    assemblyCode.add("ALLOC " + var + "    ; Aloca espaço para a lista");
+
+                } else if (instr.matches("\\w+\\s*=\\s*\\d+")) { // Atribuicao de valor a variavel "x = 5"
+
+                    String[] parts = instr.split("\\s*=\\s*");
+                    String var = parts[0];
+                    String value = parts[1];
+                    assemblyCode.add("\n; Atribuição de valor a " + var);
+                    assemblyCode.add("MOV " + var + ", " + value + "    ; " + var + " = " + value);
+
+                } else if (instr.matches("\\w+ = \\w+ \\+ \\w+")) { // Soma "a = b + c"
+
+                    String[] parts = instr.split(" = | \\+ ");
+                    String result = parts[0];
+                    String operand1 = parts[1];
+                    String operand2 = parts[2];
+                    assemblyCode.add("ADD " + result + ", " + operand1 + ", " + operand2);
+
+                } else if (instr.matches("\\w+ = \\w+ - \\w+")) { // Subtracao "a = b - c"
+
+                    String[] parts = instr.split(" = | - ");
+                    String result = parts[0];
+                    String operand1 = parts[1];
+                    String operand2 = parts[2];
+                    assemblyCode.add("SUB " + result + ", " + operand1 + ", " + operand2);
+
+                } else if (instr.matches("\\w+ = allocate\\(\\d+\\)")) { // Alocacao de Lista "a = allocate(0)"
+
+                    String var = instr.split(" = ")[0];
+                    assemblyCode.add("ALLOC " + var);
+
+                } else if (instr.matches("\\w+\\[\\d+\\] = \\d+")) { // Atribuicao de Valor em index de Lista
+                                                                     // assignment, e.g., "a[0] = 5"
+
+                    String[] parts = instr.split("\\[|\\] = ");
+                    String list = parts[0];
+                    String index = parts[1];
+                    String value = parts[2];
+
+                    assemblyCode.add("STORE " + list + ", " + index + ", " + value + "    ; " + list + "[" + index
+                            + "] = " + value);
+
+                } else if (instruction.matches("\\w+ = \\[\\d+(, \\d+)*\\]")) { // Atribuicao de valores a uma lista,
+                                                                                // e.g., "lista = [1, 2, 3]"
+                    String[] parts = instruction.split(" = ");
+                    String var = parts[0];
+                    String values = parts[1].replaceAll("[\\[\\]]", "");
+                    String[] valueArray = values.split(",\\s*");
+                    for (int i = 0; i < valueArray.length; i++) {
+                        assemblyCode.add("STORE " + var + ", " + i + ", " + valueArray[i] + "    ; " + var + "[" + i
+                                + "] = " + valueArray[i]);
+                    }
+
+                } else if (instr.matches("add \\(\\w+, \\d+, \\d+\\)")) { // Addition to list element, e.g., "ADD
+                                                                          // List[2], 4"
+                    String[] parts = instr.split("\\(|, |\\)");
+                    String list = parts[1];
+                    String index = parts[2];
+                    String value = parts[3];
+
+                    assemblyCode.add("\n; Adição de elemento na lista");
+                    assemblyCode.add("LOAD R1, " + list + "     ; R1 = endereço base da lista");
+                    assemblyCode.add("MOV R2, " + index + "     ; R2 = índice do elemento a adicionar");
+                    assemblyCode.add("MOV R3, " + value + "     ; R3 = valor a adicionar");
+
+                    assemblyCode.add("\n; Verificar se o índice é válido");
+                    assemblyCode.add("LOAD R4, lista_size     ; R4 = tamanho da lista");
+                    assemblyCode.add("CMP R2, R4    ; Comparar índice com tamanho da lista");
+                    assemblyCode.add("JL ERROR   ; Se índice < tamanho da lista, saltar para ERROR");
+
+                    assemblyCode.add("\n; Adicionar elemento à lista");
+                    assemblyCode.add("ADD R1, R1, R2    ; R1 = endereço do elemento a adicionar");
+                    assemblyCode.add("STORE R1, R3    ; " + list + "[" + index + "] = " + value);
+
+                    assemblyCode.add("\n; Atualizar tamanho da lista");
+                    assemblyCode.add("ADD R4, R4, 1    ; R4 = novo tamanho da lista");
+                    assemblyCode.add("STORE lista_size, R4    ; Atualizar tamanho da lista");
+
+                    assemblyCode.add("\nJMP END");
+
+                    // assemblyCode.add("ADD " + list + "[" + index + "], " + value);
+
+                } else if (instr.matches("print\\(.+\\)")) { // Print statement, e.g., "print('Error')"
+
+                    String message = instr.substring(6, instr.length() - 1);
+                    assemblyCode.add("PRINT " + message);
+
+                } else if (instr.matches("if \\d+ > \\d+ goto \\w+")) { // Conditional jump, e.g., "if 5 > 3 goto L1"
+
+                    String[] parts = instr.split(" if | > | goto ");
+                    String condition1 = parts[0];
+                    String condition2 = parts[1];
+                    String label = parts[2];
+                    assemblyCode.add("CMP " + condition1 + ", " + condition2);
+                    assemblyCode.add("JG " + label);
+
+                } else if (instr.startsWith("L")) { // Labels, e.g., "L1:"
+
+                    assemblyCode.add(instr);
+
+                } else if (instr.startsWith("goto")) { // Unconditional jump, e.g., "goto END"
+
+                    String label = instr.split(" ")[1];
+                    assemblyCode.add("JMP " + label);
+
+                } else { // Verificar tudo o que nao foi reconhecido
+
+                    assemblyCode.add("Erro: " + instr);
+                }
+            }
+        }
+
+        assemblyCode.add("\nEND:");
+
+        return assemblyCode;
+
+    }
 }

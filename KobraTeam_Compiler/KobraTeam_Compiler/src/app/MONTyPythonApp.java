@@ -57,6 +57,13 @@ public class MONTyPythonApp
                     {
                         System.out.println(evaluation);
                     }
+
+                    System.out.println("\n**** Código Assembly ****");
+
+                    for (String assembly : ep.getAssemblyCode(ep.getEvaluationResults())) 
+                    {
+                        System.out.println(assembly);
+                    }
                 }
                 else
                 {
